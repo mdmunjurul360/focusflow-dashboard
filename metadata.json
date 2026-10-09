@@ -1,6 +1,0 @@
-{
-  "name": "Munjurul - Immersive Focus App",
-  "description": "A modern React SPA featuring a focus-driven interface where sections light up on interaction, blurring the surrounding environment for a deep-focus experience.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
