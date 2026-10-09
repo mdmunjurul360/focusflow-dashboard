@@ -427,7 +427,6 @@ export default function Home() {
 
       {/* 🔥 FIXED BUTTON */}
       <button
-        onClick={() => alert("Login working")}
         className="w-full py-4 mt-4 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center gap-2 group hover:bg-blue-500 active:scale-95 transition-all shadow-lg shadow-blue-600/20"
       >
         <span>Access System</span>
