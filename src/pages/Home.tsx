@@ -343,7 +343,10 @@ export default function Home() {
       </div>
 
       {/* 🔥 EMAIL SIGNUP (simple alert for now) */}
-      <button
+       <button
+        onClick={() => alert("await signInWithPassword(...)")}
+        className="w-full py-4 mt-4 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center gap-2 group hover:bg-blue-500 active:scale-95 transition-all shadow-lg shadow-blue-600/20"
+      >
         onClick={() => alert("Email signup later connect korbo")}
         className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 active:scale-95"
       >
