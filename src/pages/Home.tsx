@@ -6,6 +6,7 @@
 import { supabase } from "../services/supabase";
 import { useState, useRef, useEffect, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { User } from '@supabase/supabase-js';
 import { 
   LogIn, 
   UserPlus, 
@@ -13,12 +14,9 @@ import {
   MessageSquare, 
   Mail, 
   Github,
-  Twitter,
-  Instagram,
   Facebook,
   Linkedin,
   Youtube,
-  ArrowRight,
   Send,
   Loader2,
   CheckCircle,
@@ -27,9 +25,6 @@ import {
   Trash2
 } from 'lucide-react';
 
-
-
-// --- Types ---
 type SectionId = 'signup' | 'login' | 'products' | 'feedback' | 'footer';
 
 interface Product {
@@ -40,7 +35,6 @@ interface Product {
   category: string;
 }
 
-// --- Constants ---
 const PRODUCTS: Product[] = [
   { id: 1, name: "Aura Speaker", price: "$299", category: "Audio", image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&q=80&w=400" },
   { id: 2, name: "Nebula Chair", price: "$1,200", category: "Furniture", image: "https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&q=80&w=400" },
@@ -49,8 +43,6 @@ const PRODUCTS: Product[] = [
 ];
 
 const SECTION_ORDER: SectionId[] = ['signup', 'login', 'products', 'feedback', 'footer'];
-
-// --- Components ---
 
 const FocusSection = ({ 
   id, 
@@ -65,10 +57,9 @@ const FocusSection = ({
   setActiveId: (id: SectionId) => void; 
   children: ReactNode;
   title: string;
-  icon: any;
+  icon: React.ElementType;
 }) => {
   const isActive = activeId === id;
-  
   
   return (
     <motion.section
@@ -120,7 +111,7 @@ export default function Home() {
   const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -136,7 +127,6 @@ export default function Home() {
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      console.log('USER:', session?.user);
     });
 
     return () => {
@@ -153,15 +143,13 @@ export default function Home() {
     setUser(null);
   };
 
-  // Feedback States
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackIsSending, setFeedbackIsSending] = useState(false);
   const [feedbackImage, setFeedbackImage] = useState<File | null>(null);
   const [feedbackImagePreview, setFeedbackImagePreview] = useState<string | null>(null);
   const feedbackFileInputRef = useRef<HTMLInputElement>(null);
 
-  
-  const handleFeedbackImageChange = (e: any) => {
+  const handleFeedbackImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFeedbackImage(file);
@@ -187,7 +175,6 @@ export default function Home() {
         const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
         if (!apiKey || apiKey === "YOUR_IMGBB_API_KEY") {
            console.warn("ImgBB API Key is missing. Skipping actual upload.");
-           // Mock upload success
            await new Promise(resolve => setTimeout(resolve, 1500));
            imageUrl = 'https://i.ibb.co/example/image.png';
         } else {
@@ -204,8 +191,6 @@ export default function Home() {
         }
       }
 
-      // Simulate sending feedback data with imageUrl
-      console.log('Sending Feedback:', { message: feedbackMessage, imageUrl });
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       setFeedbackIsSending(false);
@@ -217,25 +202,20 @@ export default function Home() {
     } catch (error) {
       console.error('Error sending feedback:', error);
       setFeedbackIsSending(false);
-      // In a real app we'd show an error toast here
-      alert("Error sending feedback. Check console for details.");
     }
   };
   
   const handleSend = () => {
     if (!message.trim()) return;
     setIsSending(true);
-    // Simulate API delay
     setTimeout(() => {
       setIsSending(false);
       setMessage('');
       setShowToast(true);
-      // Auto hide toast
       setTimeout(() => setShowToast(false), 5000);
     }, 1500);
   };
   
-  // Keyboard navigation for fun
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const currentIndex = SECTION_ORDER.indexOf(activeSection);
@@ -255,19 +235,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-blue-600 selection:text-white overflow-x-hidden flex flex-col">
-      {/* Background Glows */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[150px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/5 blur-[120px]" />
       </div>
 
-      {/* Modern Header */}
       <header className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-6 md:px-10 border-b border-white/5 bg-slate-950/50 backdrop-blur-md z-50">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20">
             <div className="w-3 h-3 bg-white rounded-sm rotate-45"></div>
           </div>
-          <span className="text-xl font-bold tracking-tight text-white italic">MUNJURUL</span>
+          <span className="text-xl font-bold tracking-tight text-white italic">FOCUSFLOW</span>
         </div>
         <nav className="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-slate-400">
           <span className="text-blue-400 cursor-pointer">Protocol</span>
@@ -297,7 +275,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Header */}
       <header className="relative pt-40 pb-20 text-center z-10 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -308,7 +285,7 @@ export default function Home() {
             <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-blue-400">High Fidelity Interface</span>
           </div>
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent italic">
-            MUNJURUL
+            FOCUSFLOW
           </h1>
           <p className="text-slate-400 max-w-lg mx-auto text-lg font-light leading-relaxed">
             A specialized computing environment designed for deep focus. <br/> Integrated. Secure. Professional.
@@ -318,129 +295,120 @@ export default function Home() {
 
       <main className="relative z-10 pb-40 px-4 flex-1">
         
-        {/* Signup Section */}
-<FocusSection
-  id="signup"
-  activeId={activeSection}
-  setActiveId={setActiveSection}
-  title="Registry Entry"
-  icon={UserPlus}
->
-  <div className="grid md:grid-cols-2 gap-12 items-center">
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-blue-400">Onboarding Protocol</h3>
-        <p className="text-slate-400 font-light">Initialize your presence within the Munjurul network infrastructure.</p>
-      </div>
-     
-      <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-slate-500 ml-1">E-Mail Address</label>
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="w-full bg-slate-800 rounded-xl border border-white/5 px-4 py-3 text-white"
-        />
-      </div>
-
-      {/* 🔥 EMAIL SIGNUP (simple alert for now) */}
-       <button
-        onClick={() => alert("await signInWithPassword(...)")}
-        className="w-full py-4 mt-4 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center gap-2 group hover:bg-blue-500 active:scale-95 transition-all shadow-lg shadow-blue-600/20"
-      >
-        onClick={() => alert("Email signup later connect korbo")}
-        className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-      >
-        <span>Begin Authentication</span>
-      </button>
-     
-      <div className="flex items-center gap-4 py-2">
-        <div className="h-[1px] flex-1 bg-white/5" />
-        <span className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">OR Federated Identity</span>
-        <div className="h-[1px] flex-1 bg-white/5" />
-      </div>
-
-      {/* 🔥 GOOGLE SIGNUP (REAL WORKING) */}
-      <button
-        onClick={async () => {
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "google",
-          });
-          if (error) alert(error.message);
-        }}
-        className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-white text-slate-900 font-bold hover:bg-slate-100 transition-all active:scale-95"
-      >
-        <svg className="w-5 h-5" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-          <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-        </svg>
-        <span>Identity: Google</span>
-      </button>
-    </div>
-
-    <div className="hidden md:block">
-      <div className="aspect-square rounded-2xl bg-gradient-to-br from-blue-900/20 to-indigo-950/20 flex items-center justify-center border border-white/5 p-12">
-        <motion.div
-          animate={{ rotate: 360, scale: [1, 1.05, 1] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="w-full h-full border-2 border-blue-500/20 rounded-[40px] flex items-center justify-center relative"
+        <FocusSection
+          id="signup"
+          activeId={activeSection}
+          setActiveId={setActiveSection}
+          title="Registry Entry"
+          icon={UserPlus}
         >
-          <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full" />
-          <UserPlus size={64} className="text-blue-500/30 relative z-10" />
-        </motion.div>
-      </div>
-    </div>
-  </div>
-</FocusSection>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-blue-400">Onboarding Protocol</h3>
+                <p className="text-slate-400 font-light">Initialize your presence within the FocusFlow network infrastructure.</p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-widest text-slate-500 ml-1">E-Mail Address</label>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full bg-slate-800 rounded-xl border border-white/5 px-4 py-3 text-white focus:outline-none focus:border-blue-500/30 transition-all"
+                />
+              </div>
 
-        {/* Login Section */}
-<FocusSection
-  id="login"
-  activeId={activeSection}
-  setActiveId={setActiveSection}
-  title="Access Node"
-  icon={LogIn}
->
-  <div className="max-w-md mx-auto">
-    <div className="text-center mb-10">
-      <h3 className="text-3xl font-bold mb-2">Systems Online</h3>
-      <p className="text-slate-500 text-sm">Please verify your security credentials to proceed.</p>
-    </div>
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Identity Tag</label>
-        <input
-          type="email"
-          placeholder="NODE_TAG@MUNJURUL.SYS"
-          className="w-full bg-slate-800/80 border border-white/5 rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500/30 transition-all text-sm font-mono placeholder:text-slate-600"
-        />
-      </div>
-      <div className="space-y-2">
-        <div className="flex justify-between items-center px-1">
-          <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Security Key</label>
-          <span className="text-[10px] uppercase tracking-widest text-blue-500/60 font-bold cursor-pointer hover:text-blue-400">Lost Key?</span>
-        </div>
-        <input
-          type="password"
-          placeholder="••••••••"
-          className="w-full bg-slate-800/80 border border-white/5 rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500/30 transition-all tracking-widest"
-        />
-      </div>
+              <button
+                disabled
+                className="w-full py-4 mt-4 rounded-xl bg-slate-800 text-slate-400 font-bold flex items-center justify-center gap-2 group cursor-not-allowed border border-white/5"
+              >
+                <span>Email Signup (Coming Soon)</span>
+              </button>
+              
+              <div className="flex items-center gap-4 py-2">
+                <div className="h-[1px] flex-1 bg-white/5" />
+                <span className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">OR Federated Identity</span>
+                <div className="h-[1px] flex-1 bg-white/5" />
+              </div>
 
-      {/* 🔥 FIXED BUTTON */}
-      <button
-        className="w-full py-4 mt-4 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center gap-2 group hover:bg-blue-500 active:scale-95 transition-all shadow-lg shadow-blue-600/20"
-      >
-        <span>Access System</span>
-        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-      </button>
+              <button
+                onClick={async () => {
+                  const { error } = await supabase.auth.signInWithOAuth({
+                    provider: "google",
+                  });
+                  if (error) console.error(error.message);
+                }}
+                className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-white text-slate-900 font-bold hover:bg-slate-100 transition-all active:scale-95"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span>Identity: Google</span>
+              </button>
+            </div>
 
-    </div>
-  </div>
-</FocusSection>
+            <div className="hidden md:block">
+              <div className="aspect-square rounded-2xl bg-gradient-to-br from-blue-900/20 to-indigo-950/20 flex items-center justify-center border border-white/5 p-12">
+                <motion.div
+                  animate={{ rotate: 360, scale: [1, 1.05, 1] }}
+                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                  className="w-full h-full border-2 border-blue-500/20 rounded-[40px] flex items-center justify-center relative"
+                >
+                  <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full" />
+                  <UserPlus size={64} className="text-blue-500/30 relative z-10" />
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </FocusSection>
 
-        {/* Products Section */}
+        <FocusSection
+          id="login"
+          activeId={activeSection}
+          setActiveId={setActiveSection}
+          title="Access Node"
+          icon={LogIn}
+        >
+          <div className="max-w-md mx-auto">
+            <div className="text-center mb-10">
+              <h3 className="text-3xl font-bold mb-2">Systems Online</h3>
+              <p className="text-slate-500 text-sm">Please verify your security credentials to proceed.</p>
+            </div>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">Identity Tag</label>
+                <input
+                  type="email"
+                  placeholder="NODE_TAG@FOCUSFLOW.SYS"
+                  className="w-full bg-slate-800/80 border border-white/5 rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500/30 transition-all text-sm font-mono placeholder:text-slate-600"
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center px-1">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Security Key</label>
+                  <span className="text-[10px] uppercase tracking-widest text-blue-500/60 font-bold cursor-pointer hover:text-blue-400">Lost Key?</span>
+                </div>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  className="w-full bg-slate-800/80 border border-white/5 rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500/30 transition-all tracking-widest"
+                />
+              </div>
+
+              <button
+                disabled
+                className="w-full py-4 mt-4 rounded-xl bg-slate-800 text-slate-400 font-bold flex items-center justify-center gap-2 group cursor-not-allowed border border-white/5"
+              >
+                <span>Coming Soon</span>
+              </button>
+
+            </div>
+          </div>
+        </FocusSection>
+
         <FocusSection 
           id="products" 
           activeId={activeSection} 
@@ -489,7 +457,6 @@ export default function Home() {
           </div>
         </FocusSection>
 
-        {/* Feedback Section */}
         <FocusSection 
           id="feedback" 
           activeId={activeSection} 
@@ -591,7 +558,6 @@ export default function Home() {
           </div>
         </FocusSection>
 
-        {/* Footer Section */}
         <FocusSection 
           id="footer" 
           activeId={activeSection} 
@@ -600,7 +566,6 @@ export default function Home() {
           icon={Mail}
         >
           <div className="grid md:grid-cols-2 gap-20 py-10">
-            {/* Left Side: Socials */}
             <div className="space-y-10">
               <div className="space-y-4">
                 <h3 className="text-4xl font-bold text-white tracking-tight">Get in touch.</h3>
@@ -611,14 +576,14 @@ export default function Home() {
 
               <div className="grid grid-cols-2 gap-6">
                 {[
-                  { icon: Facebook, label: "Facebook", color: "hover:text-blue-500" },
-                  { icon: Linkedin, label: "LinkedIn", color: "hover:text-blue-400" },
-                  { icon: Github, label: "GitHub", color: "hover:text-white" },
-                  { icon: Youtube, label: "YouTube", color: "hover:text-red-500" },
+                  { icon: Facebook, label: "Facebook", color: "hover:text-blue-500", url: "https://facebook.com/username" },
+                  { icon: Linkedin, label: "LinkedIn", color: "hover:text-blue-400", url: "https://linkedin.com/in/username" },
+                  { icon: Github, label: "GitHub", color: "hover:text-white", url: "https://github.com/username" },
+                  { icon: Youtube, label: "YouTube", color: "hover:text-red-500", url: "https://youtube.com/@username" },
                 ].map((social, i) => (
                   <motion.a
                     key={i}
-                    href="#"
+                    href={social.url}
                     whileHover={{ x: 5 }}
                     className={`flex items-center gap-3 text-slate-400 font-medium tracking-wide transition-colors ${social.color}`}
                   >
@@ -631,7 +596,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Side: Contact Form */}
             <div className="relative">
               <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-2xl">
                 <div className="space-y-6">
@@ -666,7 +630,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Toast Notification Simulation */}
               <AnimatePresence>
                 {showToast && (
                   <motion.div
@@ -693,18 +656,16 @@ export default function Home() {
 
           <div className="pt-20 pb-10 flex justify-center border-t border-white/5">
             <p className="text-[10px] uppercase tracking-[0.4em] text-slate-500 font-bold">
-              © 2026 Munjurul. All rights reserved.
+              © 2026 FocusFlow Dashboard. All rights reserved.
             </p>
           </div>
         </FocusSection>
       </main>
 
-      {/* Main Footer Fixed - Simple/Minimal */}
       <footer className="relative mt-auto h-12 flex items-center justify-center px-10 border-t border-white/5 text-[10px] text-slate-700 tracking-[0.5em] font-mono bg-slate-950/80 backdrop-blur-sm z-20">
-        SYSTEM_CONNECTED // MUNJURUL_PROTOCOL
+        SYSTEM_CONNECTED // FOCUSFLOW_PROTOCOL
       </footer>
       
-      {/* Scroll Navigation Dots */}
       <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-5">
         {SECTION_ORDER.map((id) => (
           <div key={id} className="group relative flex items-center justify-end">
